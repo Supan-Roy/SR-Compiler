@@ -1,0 +1,5 @@
+{
+  "name": "SR Compiler",
+  "description": "A powerful online compiler and code formatter supporting multiple programming languages, powered by the Gemini API. Write, format, and run code seamlessly in a clean, modern interface.",
+  "requestFramePermissions": []
+}
