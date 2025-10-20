@@ -36,7 +36,11 @@ export const InteractiveConsole: React.FC<InteractiveConsoleProps> = ({ history,
   const handleCopy = () => {
     if (history.length === 0) return;
     const historyText = history.map(line => line.type === 'stdin' ? `> ${line.content}` : line.content).join('\n');
-    navigator.clipboard.writeText(historyText).then(() => {
+    
+    // Remove the "[Program finished]" message from the end of the text.
+    const textToCopy = historyText.replace(/(\n\n)?\[Program finished\]\s*$/, '').trimEnd();
+
+    navigator.clipboard.writeText(textToCopy).then(() => {
       setCopyState('check');
       setTimeout(() => setCopyState('copy'), 1500);
     });
