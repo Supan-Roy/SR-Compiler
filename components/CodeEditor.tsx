@@ -110,6 +110,72 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ code, onCodeChange, lang
         preRef.current.scrollLeft = scrollLeft;
     }
   };
+  
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const textarea = e.currentTarget;
+    const { value, selectionStart, selectionEnd } = textarea;
+    const tab = '    '; // 4 spaces
+
+    // Handle Tab key for indentation
+    if (e.key === 'Tab') {
+        e.preventDefault();
+        const newCode = value.substring(0, selectionStart) + tab + value.substring(selectionEnd);
+        onCodeChange(newCode);
+
+        const newCursorPos = selectionStart + tab.length;
+        setTimeout(() => {
+            textarea.selectionStart = newCursorPos;
+            textarea.selectionEnd = newCursorPos;
+        }, 0);
+        return;
+    }
+
+    // Auto Indent on Enter
+    if (e.key === 'Enter') {
+        e.preventDefault();
+
+        const lineStart = value.lastIndexOf('\n', selectionStart - 1) + 1;
+        const currentLine = value.substring(lineStart, selectionStart);
+        const indentationMatch = currentLine.match(/^\s*/);
+        let indentation = indentationMatch ? indentationMatch[0] : '';
+
+        // Add extra indent if the current line ends with an opening brace
+        if (currentLine.trim().endsWith('{')) {
+            indentation += tab;
+        }
+
+        const newCode = value.substring(0, selectionStart) + '\n' + indentation + value.substring(selectionEnd);
+        onCodeChange(newCode);
+
+        const newCursorPos = selectionStart + 1 + indentation.length;
+        setTimeout(() => {
+            textarea.selectionStart = newCursorPos;
+            textarea.selectionEnd = newCursorPos;
+        }, 0);
+        return;
+    }
+    
+    // Auto Closing Brackets
+    const bracketPairs: Record<string, string> = { '{': '}', '(': ')', '[': ']' };
+    if (bracketPairs[e.key as keyof typeof bracketPairs]) {
+        if (selectionStart === selectionEnd) {
+            e.preventDefault();
+            const open = e.key;
+            const close = bracketPairs[open as keyof typeof bracketPairs];
+
+            const newCode = value.substring(0, selectionStart) + open + close + value.substring(selectionEnd);
+            onCodeChange(newCode);
+            
+            const newCursorPos = selectionStart + 1;
+            setTimeout(() => {
+                textarea.selectionStart = newCursorPos;
+                textarea.selectionEnd = newCursorPos;
+            }, 0);
+            return;
+        }
+    }
+  };
+
 
   return (
     <div className="bg-slate-100 dark:bg-slate-800 rounded-lg shadow-inner flex-grow flex flex-col overflow-hidden border border-slate-200 dark:border-slate-700">
@@ -136,6 +202,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ code, onCodeChange, lang
               onChange={(e) => onCodeChange(e.target.value)}
               onContextMenu={handleContextMenu}
               onScroll={handleScroll}
+              onKeyDown={handleKeyDown}
               className={`code-editor-textarea col-start-1 row-start-1 w-full h-full py-4 pl-3 pr-4 bg-transparent text-transparent resize-none focus:outline-none font-mono leading-relaxed whitespace-pre-wrap break-words z-10 overflow-auto ${fontSize}`}
               placeholder="Enter your code here..."
               spellCheck="false"

@@ -6,7 +6,7 @@
 
 This contains everything you need to run your app locally.
 
-Try Live: https://sr-compiler-936065704041.us-west1.run.app/
+View your app in AI Studio: https://ai.studio/apps/drive/1cJ9-4j1jW9TigSdNgnltGVbnkYj3Fa5O
 
 ## Run Locally
 

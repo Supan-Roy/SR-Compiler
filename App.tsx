@@ -7,6 +7,7 @@ import { formatCode, startInteractiveRun, continueInteractiveRun, runCodeOnce } 
 import { LANGUAGES, CODE_TEMPLATES } from './constants';
 import type { Language, ExecutionMode } from './types';
 import { Icon } from './components/Icon';
+import { ConfirmDialog } from './components/ConfirmDialog';
 
 const FONT_SIZES = ['text-sm', 'text-base', 'text-lg'];
 
@@ -55,6 +56,7 @@ const App: React.FC = () => {
   const [isError, setIsError] = useState<boolean>(false);
   const [executionMode, setExecutionMode] = useState<ExecutionMode>('interactive');
   const [activeMobileView, setActiveMobileView] = useState<'editor' | 'output'>('editor');
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   
   // Save state to localStorage on change
   useEffect(() => {
@@ -184,13 +186,14 @@ const App: React.FC = () => {
     }
   }, [code, selectedLanguage]);
   
-  const handleClearCode = useCallback(() => {
+  const handleConfirmClear = useCallback(() => {
     setCode(CODE_TEMPLATES[selectedLanguage.id]);
     setHistory([]);
     setManualOutput('');
     setIsError(false);
     setChat(null);
     setIsWaitingForInput(false);
+    setShowClearConfirm(false);
   }, [selectedLanguage]);
 
   const handleFontSizeChange = useCallback(() => {
@@ -206,7 +209,7 @@ const App: React.FC = () => {
         onLanguageChange={handleLanguageChange}
         onRunCode={handleRunCode}
         onFormatCode={handleFormatCode}
-        onClearCode={handleClearCode}
+        onClearCode={() => setShowClearConfirm(true)}
         onFontSizeChange={handleFontSizeChange}
         isRunLoading={isRunLoading}
         isFormatLoading={isFormatLoading}
@@ -257,6 +260,15 @@ const App: React.FC = () => {
           Output
         </button>
       </div>
+
+      {showClearConfirm && (
+        <ConfirmDialog
+          title="Clear Editor"
+          message="Are you sure you want to clear the editor? This will reset the code to the default template."
+          onConfirm={handleConfirmClear}
+          onCancel={() => setShowClearConfirm(false)}
+        />
+      )}
     </div>
   );
 };
