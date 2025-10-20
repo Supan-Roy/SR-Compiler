@@ -29,8 +29,16 @@ export const Icon: React.FC<IconProps> = ({ type, ...props }) => {
       </svg>
     ),
     logo: (
-        <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
+        <svg {...props} viewBox="0 0 24 24" fill="none">
+          <defs>
+            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#22d3ee" />
+              <stop offset="100%" stopColor="#0891b2" />
+            </linearGradient>
+          </defs>
+          <path d="M12 2L4 6V18L12 22L20 18V6L12 2Z" stroke="url(#grad1)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M9 10L7 12L9 14" stroke="url(#grad1)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M15 10L17 12L15 14" stroke="url(#grad1)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
     ),
     terminal: (

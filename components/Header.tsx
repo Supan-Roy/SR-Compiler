@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { Language } from '../types';
 import { LANGUAGES } from '../constants';
 import { Icon } from './Icon';
@@ -25,6 +25,7 @@ export const Header: React.FC<HeaderProps> = ({
   isFormatLoading,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const isAnyLoading = isRunLoading || isFormatLoading;
 
   const handleSelectLanguage = (lang: Language) => {
@@ -32,18 +33,33 @@ export const Header: React.FC<HeaderProps> = ({
     setIsDropdownOpen(false);
   };
 
+  useEffect(() => {
+    if (!isDropdownOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
   const commonButtonClass = "flex items-center gap-2 rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium";
 
   return (
-    <header className="bg-slate-800 p-2 md:p-3 flex items-center justify-between shadow-md z-10 border-b border-slate-700">
+    <header className="bg-slate-800 p-2 md:p-3 flex items-center justify-between shadow-md z-30 border-b border-slate-700 relative">
       <div className="flex items-center gap-2">
-        <Icon type="logo" className="w-8 h-8 text-cyan-500"/>
+        <Icon type="logo" className="w-8 h-8"/>
         <h1 className="text-xl font-bold text-slate-100 hidden sm:block">SR Compiler</h1>
       </div>
 
       <div className="flex items-center gap-2 md:gap-3">
         {/* Language Selector */}
-        <div className="relative">
+        <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             disabled={isAnyLoading}
@@ -53,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
             <Icon type="chevronDown" className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
           </button>
           {isDropdownOpen && (
-            <div className="absolute top-full mt-2 right-0 bg-slate-700 rounded-md shadow-lg w-40 z-20 border border-slate-600">
+            <div className="absolute top-full mt-2 right-0 bg-slate-700 rounded-md shadow-lg w-40 z-50 border border-slate-600">
               {LANGUAGES.map((lang) => (
                 <button
                   key={lang.id}

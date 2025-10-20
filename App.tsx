@@ -185,13 +185,13 @@ const App: React.FC = () => {
   }, [code, selectedLanguage]);
   
   const handleClearCode = useCallback(() => {
-    setCode('');
+    setCode(CODE_TEMPLATES[selectedLanguage.id]);
     setHistory([]);
     setManualOutput('');
     setIsError(false);
     setChat(null);
     setIsWaitingForInput(false);
-  }, []);
+  }, [selectedLanguage]);
 
   const handleFontSizeChange = useCallback(() => {
     const currentIndex = FONT_SIZES.indexOf(fontSize);

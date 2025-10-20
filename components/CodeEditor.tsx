@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import ReactDOM from 'react-dom';
 import { Icon } from './Icon';
 import type { Language } from '../types';
 
@@ -154,18 +155,20 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ code, onCodeChange, lang
             </pre>
         </div>
       </div>
-      {menu.visible && (
+      {menu.visible && ReactDOM.createPortal(
          <div 
-            className="absolute z-30 bg-slate-100 dark:bg-slate-700 rounded-md shadow-lg py-1 border border-slate-300 dark:border-slate-600 text-sm"
+            role="menu"
+            className="fixed z-50 bg-slate-100 dark:bg-slate-700 rounded-md shadow-lg py-1 border border-slate-300 dark:border-slate-600 text-sm"
             style={{ top: menu.y, left: menu.x }}
             onClick={(e) => e.stopPropagation()}
          >
-            <button onClick={() => handleMenuAction('cut')} className="block w-full text-left px-4 py-1.5 hover:bg-slate-200 dark:hover:bg-slate-600">Cut</button>
-            <button onClick={() => handleMenuAction('copy')} className="block w-full text-left px-4 py-1.5 hover:bg-slate-200 dark:hover:bg-slate-600">Copy</button>
-            <button onClick={() => handleMenuAction('paste')} className="block w-full text-left px-4 py-1.5 hover:bg-slate-200 dark:hover:bg-slate-600">Paste</button>
+            <button role="menuitem" onClick={() => handleMenuAction('cut')} className="block w-full text-left px-4 py-1.5 hover:bg-slate-200 dark:hover:bg-slate-600">Cut</button>
+            <button role="menuitem" onClick={() => handleMenuAction('copy')} className="block w-full text-left px-4 py-1.5 hover:bg-slate-200 dark:hover:bg-slate-600">Copy</button>
+            <button role="menuitem" onClick={() => handleMenuAction('paste')} className="block w-full text-left px-4 py-1.5 hover:bg-slate-200 dark:hover:bg-slate-600">Paste</button>
             <div className="my-1 border-t border-slate-300 dark:border-slate-600"></div>
-            <button onClick={() => handleMenuAction('changeAll')} className="block w-full text-left px-4 py-1.5 hover:bg-slate-200 dark:hover:bg-slate-600">Change All Occurrences</button>
-         </div>
+            <button role="menuitem" onClick={() => handleMenuAction('changeAll')} className="block w-full text-left px-4 py-1.5 hover:bg-slate-200 dark:hover:bg-slate-600">Change All Occurrences</button>
+         </div>,
+         document.body
       )}
     </div>
   );
