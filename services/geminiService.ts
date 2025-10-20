@@ -19,9 +19,8 @@ export const runCodeOnce = async (code: string, language: string, input: string)
     const prompt = `
 You are an expert code execution engine.
 Execute the following ${language} code with the provided standard input.
-Return ONLY the raw standard output of the code.
-If there is a compilation or runtime error, return ONLY the exact error message.
-Do not add any explanations, preambles, or markdown formatting.
+Your response MUST contain ONLY the raw output of the code, and NOTHING ELSE.
+If there is a compilation or runtime error, return the exact error message instead.
 
 Standard Input:
 ---
@@ -34,7 +33,7 @@ ${code}
 \`\`\`
 `;
     try {
-         const response = await ai.models.generateContent({
+        const response = await ai.models.generateContent({
             model: EXECUTION_MODEL,
             contents: prompt,
         });
@@ -105,7 +104,7 @@ ${code}
 
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gem-2.5-flash',
             contents: prompt,
             config: {
                 thinkingConfig: { thinkingBudget: 0 },

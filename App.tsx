@@ -98,11 +98,14 @@ const App: React.FC = () => {
   const [history, setHistory] = useState<{ type: 'stdout' | 'stdin'; content: string }[]>([]);
   const [manualOutput, setManualOutput] = useState('');
   const [manualInput, setManualInput] = useState('');
+  const [expectedOutput, setExpectedOutput] = useState('');
+  const [verdict, setVerdict] = useState<string | null>(null);
   const [chat, setChat] = useState<Chat | null>(null);
   const [isWaitingForInput, setIsWaitingForInput] = useState<boolean>(false);
   const [isRunLoading, setIsRunLoading] = useState<boolean>(false);
   const [isFormatLoading, setIsFormatLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [executionMode, setExecutionMode] = useState<ExecutionMode>('interactive');
   const [activeMobileView, setActiveMobileView] = useState<'editor' | 'output'>('editor');
   
@@ -173,7 +176,9 @@ const App: React.FC = () => {
     setCode(getInitialCode(lang));
     setHistory([]);
     setManualOutput('');
+    setVerdict(null);
     setIsError(false);
+    setIsSuccess(false);
     setChat(null);
     setIsWaitingForInput(false);
   }, []);
@@ -189,7 +194,9 @@ const App: React.FC = () => {
     setIsRunLoading(true);
     setHistory([]);
     setManualOutput('');
+    setVerdict(null);
     setIsError(false);
+    setIsSuccess(false);
     setIsWaitingForInput(false);
     setChat(null);
 
@@ -205,7 +212,7 @@ const App: React.FC = () => {
       } finally {
         setIsRunLoading(false);
       }
-    } else { // Manual mode
+    } else if (executionMode === 'manual') {
        try {
         const result = await runCodeOnce(code, selectedLanguage.name, manualInput);
         setManualOutput(result);
@@ -216,8 +223,30 @@ const App: React.FC = () => {
       } finally {
         setIsRunLoading(false);
       }
+    } else { // Competitive mode
+        try {
+            const actualOutput = await runCodeOnce(code, selectedLanguage.name, manualInput);
+            const trimmedExpected = expectedOutput.trim();
+
+            if (actualOutput.trim() === trimmedExpected) {
+                setVerdict('Passed');
+                setIsSuccess(true);
+                setManualOutput('');
+            } else {
+                setVerdict('Wrong Answer');
+                setManualOutput(actualOutput);
+                setIsError(true);
+            }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
+            setVerdict('Execution Error');
+            setManualOutput(errorMessage);
+            setIsError(true);
+        } finally {
+            setIsRunLoading(false);
+        }
     }
-  }, [code, selectedLanguage, executionMode, manualInput]);
+  }, [code, selectedLanguage, executionMode, manualInput, expectedOutput]);
 
   const handleUserInput = useCallback(async (userInput: string) => {
     if (!chat || !userInput.trim()) return;
@@ -258,11 +287,22 @@ const App: React.FC = () => {
     setCode(CODE_TEMPLATES[selectedLanguage.id]);
     setHistory([]);
     setManualOutput('');
+    setVerdict(null);
     setIsError(false);
+    setIsSuccess(false);
     setChat(null);
     setIsWaitingForInput(false);
     setShowClearConfirm(false);
   }, [selectedLanguage]);
+
+  const handleClearTerminal = useCallback(() => {
+    setHistory([]);
+    setChat(null);
+    setIsWaitingForInput(false);
+    setIsRunLoading(false);
+    setIsError(false);
+    setIsSuccess(false);
+  }, []);
 
   const handleDownloadCode = () => {
     const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
@@ -321,6 +361,8 @@ const App: React.FC = () => {
             languageName={selectedLanguage.name}
             languageId={selectedLanguage.id}
             fontSize={fontSize}
+            onFormatCode={handleFormatCode}
+            isFormatLoading={isFormatLoading}
           />
           <ExecutionPanel
             mode={executionMode}
@@ -328,10 +370,16 @@ const App: React.FC = () => {
             history={history}
             isWaitingForInput={isWaitingForInput}
             onUserInput={handleUserInput}
+            onClearTerminal={handleClearTerminal}
             input={manualInput}
             onInputChange={setManualInput}
             output={manualOutput}
+            expectedOutput={expectedOutput}
+            onExpectedOutputChange={setExpectedOutput}
+            verdict={verdict}
+            isLoading={isRunLoading}
             isError={isError}
+            isSuccess={isSuccess}
             fontSize={fontSize}
           />
         </ResizablePanels>
@@ -340,10 +388,10 @@ const App: React.FC = () => {
       {/* Mobile View (Non-resizable) */}
       <main className="flex-grow flex flex-col md:hidden p-2 gap-4 overflow-hidden pb-20">
          <div className={`flex-1 flex-col min-h-0 ${activeMobileView === 'editor' ? 'flex' : 'hidden'}`}>
-           <CodeEditor code={code} onCodeChange={setCode} languageName={selectedLanguage.name} languageId={selectedLanguage.id} fontSize={fontSize} />
+           <CodeEditor code={code} onCodeChange={setCode} languageName={selectedLanguage.name} languageId={selectedLanguage.id} fontSize={fontSize} onFormatCode={handleFormatCode} isFormatLoading={isFormatLoading} />
          </div>
          <div className={`flex-1 flex-col min-h-0 ${activeMobileView === 'output' ? 'flex' : 'hidden'}`}>
-           <ExecutionPanel mode={executionMode} onModeChange={setExecutionMode} history={history} isWaitingForInput={isWaitingForInput} onUserInput={handleUserInput} input={manualInput} onInputChange={setManualInput} output={manualOutput} isError={isError} fontSize={fontSize} />
+           <ExecutionPanel mode={executionMode} onModeChange={setExecutionMode} history={history} isWaitingForInput={isWaitingForInput} onUserInput={handleUserInput} onClearTerminal={handleClearTerminal} input={manualInput} onInputChange={setManualInput} output={manualOutput} expectedOutput={expectedOutput} onExpectedOutputChange={setExpectedOutput} verdict={verdict} isLoading={isRunLoading} isError={isError} isSuccess={isSuccess} fontSize={fontSize} />
          </div>
       </main>
 

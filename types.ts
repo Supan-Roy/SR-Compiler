@@ -5,6 +5,6 @@ export interface Language {
   extension: string;
 }
 
-export type ExecutionMode = 'interactive' | 'manual';
+export type ExecutionMode = 'interactive' | 'manual' | 'competitive';
 
 export type Theme = 'light' | 'dark' | 'system';

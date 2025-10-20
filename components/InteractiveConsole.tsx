@@ -5,11 +5,12 @@ interface InteractiveConsoleProps {
   history: { type: 'stdout' | 'stdin'; content: string }[];
   isWaitingForInput: boolean;
   onUserInput: (input: string) => void;
+  onClear: () => void;
   isError: boolean;
   fontSize: string;
 }
 
-export const InteractiveConsole: React.FC<InteractiveConsoleProps> = ({ history, isWaitingForInput, onUserInput, isError, fontSize }) => {
+export const InteractiveConsole: React.FC<InteractiveConsoleProps> = ({ history, isWaitingForInput, onUserInput, onClear, isError, fontSize }) => {
   const [currentInput, setCurrentInput] = useState('');
   const [copyState, setCopyState] = useState<'copy' | 'check'>('copy');
   const endOfHistoryRef = useRef<null | HTMLDivElement>(null);
@@ -48,9 +49,14 @@ export const InteractiveConsole: React.FC<InteractiveConsoleProps> = ({ history,
             <Icon type="terminal" className="w-5 h-5 text-slate-500 dark:text-slate-400" />
             <h2 className="text-sm font-semibold text-slate-600 dark:text-slate-300">Terminal</h2>
         </div>
-        <button onClick={handleCopy} className="p-1.5 rounded-md hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
-          <Icon type={copyState} className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-        </button>
+        <div className="flex items-center gap-1">
+            <button title="Clear and kill terminal session" onClick={onClear} className="p-1.5 rounded-md hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+                <Icon type="clear" className="w-5 h-5 text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors" />
+            </button>
+            <button title="Copy output" onClick={handleCopy} className="p-1.5 rounded-md hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+              <Icon type={copyState} className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+            </button>
+        </div>
       </div>
       <div className={`flex-grow p-4 font-mono overflow-auto ${fontSize}`}>
         <div className={`whitespace-pre-wrap break-words leading-relaxed ${isError ? 'text-red-500 dark:text-red-400' : 'text-slate-800 dark:text-slate-200'}`}>

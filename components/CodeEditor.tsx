@@ -9,6 +9,8 @@ interface CodeEditorProps {
   languageName: string;
   languageId: Language['id'];
   fontSize: string;
+  onFormatCode: () => void;
+  isFormatLoading: boolean;
 }
 
 interface MenuState {
@@ -26,12 +28,13 @@ declare global {
   }
 }
 
-export const CodeEditor: React.FC<CodeEditorProps> = ({ code, onCodeChange, languageName, languageId, fontSize }) => {
+export const CodeEditor: React.FC<CodeEditorProps> = ({ code, onCodeChange, languageName, languageId, fontSize, onFormatCode, isFormatLoading }) => {
   const [copyState, setCopyState] = useState<'copy' | 'check'>('copy');
   const [menu, setMenu] = useState<MenuState>({ visible: false, x: 0, y: 0 });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lineNumbersRef = useRef<HTMLDivElement>(null);
   const preRef = useRef<HTMLPreElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const lineCount = code.split('\n').length;
 
@@ -60,19 +63,28 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ code, onCodeChange, lang
   };
   
   const closeMenu = useCallback(() => setMenu(prev => ({...prev, visible: false})), []);
-
+  
+  // Effect to handle closing the menu when clicking outside
   useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      // Close the menu if it's visible and the click is outside of it.
+      if (menu.visible && menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        closeMenu();
+      }
+    };
+    
+    // Using mousedown to catch the click event earlier than 'click'.
     if (menu.visible) {
-      document.addEventListener('click', closeMenu);
-      document.addEventListener('contextmenu', closeMenu);
+      document.addEventListener('mousedown', handleOutsideClick);
     }
+
     return () => {
-      document.removeEventListener('click', closeMenu);
-      document.removeEventListener('contextmenu', closeMenu);
+      document.removeEventListener('mousedown', handleOutsideClick);
     };
   }, [menu.visible, closeMenu]);
 
-  const handleMenuAction = async (action: 'cut' | 'copy' | 'paste' | 'changeAll') => {
+
+  const handleMenuAction = async (action: 'cut' | 'copy' | 'paste' | 'changeAll' | 'format') => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
@@ -89,6 +101,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ code, onCodeChange, lang
     } else if (action === 'paste') {
         const textToPaste = await navigator.clipboard.readText();
         onCodeChange(code.slice(0, selectionStart) + textToPaste + code.slice(selectionEnd));
+    } else if (action === 'format') {
+        onFormatCode();
     } else if (action === 'changeAll') {
         if (!selectedText) {
             alert("Please select the text you want to replace.");
@@ -223,15 +237,17 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ code, onCodeChange, lang
         </div>
       </div>
       {menu.visible && ReactDOM.createPortal(
-         <div 
+         <div
+            ref={menuRef}
             role="menu"
             className="fixed z-50 bg-slate-100 dark:bg-slate-700 rounded-md shadow-lg py-1 border border-slate-300 dark:border-slate-600 text-sm"
             style={{ top: menu.y, left: menu.x }}
-            onClick={(e) => e.stopPropagation()}
          >
             <button role="menuitem" onClick={() => handleMenuAction('cut')} className="block w-full text-left px-4 py-1.5 hover:bg-slate-200 dark:hover:bg-slate-600">Cut</button>
             <button role="menuitem" onClick={() => handleMenuAction('copy')} className="block w-full text-left px-4 py-1.5 hover:bg-slate-200 dark:hover:bg-slate-600">Copy</button>
             <button role="menuitem" onClick={() => handleMenuAction('paste')} className="block w-full text-left px-4 py-1.5 hover:bg-slate-200 dark:hover:bg-slate-600">Paste</button>
+            <div className="my-1 border-t border-slate-300 dark:border-slate-600"></div>
+            <button role="menuitem" onClick={() => handleMenuAction('format')} className="block w-full text-left px-4 py-1.5 hover:bg-slate-200 dark:hover:bg-slate-600 disabled:opacity-50" disabled={isFormatLoading}>Format Code</button>
             <div className="my-1 border-t border-slate-300 dark:border-slate-600"></div>
             <button role="menuitem" onClick={() => handleMenuAction('changeAll')} className="block w-full text-left px-4 py-1.5 hover:bg-slate-200 dark:hover:bg-slate-600">Change All Occurrences</button>
          </div>,

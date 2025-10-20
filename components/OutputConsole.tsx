@@ -4,10 +4,11 @@ import { Icon } from './Icon';
 interface OutputConsoleProps {
   output: string;
   isError: boolean;
+  isSuccess?: boolean;
   fontSize: string;
 }
 
-export const OutputConsole: React.FC<OutputConsoleProps> = ({ output, isError, fontSize }) => {
+export const OutputConsole: React.FC<OutputConsoleProps> = ({ output, isError, isSuccess, fontSize }) => {
   const [copyState, setCopyState] = useState<'copy' | 'check'>('copy');
 
   const handleCopy = () => {
@@ -31,6 +32,7 @@ export const OutputConsole: React.FC<OutputConsoleProps> = ({ output, isError, f
       </div>
       <pre
         className={`w-full flex-grow p-4 font-mono leading-relaxed overflow-auto whitespace-pre-wrap break-words ${fontSize} ${
+          isSuccess ? 'text-green-600 dark:text-green-400' :
           isError ? 'text-red-500 dark:text-red-400' : 'text-slate-800 dark:text-slate-200'
         }`}
       >
