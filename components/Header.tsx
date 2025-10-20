@@ -58,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="bg-slate-100 dark:bg-slate-800 p-2 md:p-3 flex items-center justify-between shadow-md z-30 border-b border-slate-200 dark:border-slate-700 relative">
       <div className="flex items-center gap-2">
         <Icon type="logo" className="w-8 h-8"/>
-        <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 hidden sm:block">SR Compiler</h1>
+        <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-500 to-cyan-700 dark:from-cyan-400 dark:to-cyan-600 bg-clip-text text-transparent hidden sm:block">SR Compiler</h1>
       </div>
 
       <div className="flex items-center gap-2 md:gap-3">
