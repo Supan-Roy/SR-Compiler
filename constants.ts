@@ -1,13 +1,13 @@
 import type { Language } from './types';
 
 export const LANGUAGES: Language[] = [
-  { id: 'cpp', name: 'C++' },
-  { id: 'c', name: 'C' },
-  { id: 'javascript', name: 'JavaScript', alias: 'js' },
-  { id: 'python', name: 'Python', alias: 'py' },
-  { id: 'java', name: 'Java' },
-  { id: 'go', name: 'Go' },
-  { id: 'typescript', name: 'TypeScript', alias: 'ts' },
+  { id: 'cpp', name: 'C++', extension: 'cpp' },
+  { id: 'c', name: 'C', extension: 'c' },
+  { id: 'javascript', name: 'JavaScript', alias: 'js', extension: 'js' },
+  { id: 'python', name: 'Python', alias: 'py', extension: 'py' },
+  { id: 'java', name: 'Java', extension: 'java' },
+  { id: 'go', name: 'Go', extension: 'go' },
+  { id: 'typescript', name: 'TypeScript', alias: 'ts', extension: 'ts' },
 ];
 
 export const CODE_TEMPLATES: Record<Language['id'], string> = {

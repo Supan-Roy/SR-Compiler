@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,29 +7,42 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cdefs%3E%3ClinearGradient id='grad1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2322d3ee' /%3E%3Cstop offset='100%25' stop-color='%230891b2' /%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M12 2L4 6V18L12 22L20 18V6L12 2Z' stroke='url(%23grad1)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' /%3E%3Cpath d='M9 10L7 12L9 14' stroke='url(%23grad1)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' /%3E%3Cpath d='M15 10L17 12L15 14' stroke='url(%23grad1)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' /%3E%3C/svg%3E" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" media="(prefers-color-scheme: light)">
     <script>
       tailwind.config = {
         darkMode: 'class',
       }
     </script>
     <style>
-      body {
-        background-color: #0f172a; /* slate-900 */
-      }
-      
       /* Dark mode scrollbar */
-      ::-webkit-scrollbar {
+      .dark ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
       }
-      ::-webkit-scrollbar-track {
+      .dark ::-webkit-scrollbar-track {
         background: #1e293b; /* slate-800 */
       }
-      ::-webkit-scrollbar-thumb {
+      .dark ::-webkit-scrollbar-thumb {
         background: #475569; /* slate-600 */
         border-radius: 4px;
       }
-      ::-webkit-scrollbar-thumb:hover {
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: #64748b; /* slate-500 */
+      }
+
+       /* Light mode scrollbar */
+      :not(.dark) ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      :not(.dark) ::-webkit-scrollbar-track {
+        background: #e2e8f0; /* slate-200 */
+      }
+      :not(.dark) ::-webkit-scrollbar-thumb {
+        background: #94a3b8; /* slate-400 */
+        border-radius: 4px;
+      }
+      :not(.dark) ::-webkit-scrollbar-thumb:hover {
         background: #64748b; /* slate-500 */
       }
 
@@ -41,8 +54,12 @@
         background: transparent !important;
       }
       
-      .code-editor-textarea {
+      .dark .code-editor-textarea {
          caret-color: #e2e8f0; /* slate-200 */
+      }
+
+      .light .code-editor-textarea {
+         caret-color: #1e293b; /* slate-800 */
       }
 
       /* Hide scrollbar utility */
@@ -52,6 +69,94 @@
       .hide-scrollbar {
         -ms-overflow-style: none;  /* IE and Edge */
         scrollbar-width: none;  /* Firefox */
+      }
+      
+      /* Light mode highlight.js contrast improvements */
+      .light .hljs {
+        color: #1e293b; /* slate-800 */
+      }
+      .light .hljs-comment,
+      .light .hljs-quote {
+        color: #64748b; /* slate-500 */
+        font-style: italic;
+      }
+      .light .hljs-keyword,
+      .light .hljs-selector-tag,
+      .light .hljs-subst {
+        color: #9333ea; /* purple-600 */
+      }
+      .light .hljs-number,
+      .light .hljs-literal,
+      .light .hljs-variable,
+      .light .hljs-template-variable,
+      .light .hljs-tag .hljs-attr {
+        color: #d97706; /* amber-600 */
+      }
+      .light .hljs-string,
+      .light .hljs-doctag {
+        color: #059669; /* emerald-600 */
+      }
+      .light .hljs-title,
+      .light .hljs-section,
+      .light .hljs-selector-id {
+        color: #0284c7; /* sky-600 */
+      }
+      .light .hljs-type,
+      .light .hljs-class .hljs-title {
+        color: #c026d3; /* fuchsia-600 */
+      }
+      .light .hljs-tag,
+      .light .hljs-name,
+      .light .hljs-attribute {
+        color: #db2777; /* pink-600 */
+      }
+      .light .hljs-built_in,
+      .light .hljs-builtin-name {
+        color: #2563eb; /* blue-600 */
+      }
+
+      /* Dark mode highlight.js contrast improvements */
+      .dark .hljs {
+        color: #cbd5e1; /* slate-300, for better punctuation visibility */
+      }
+      .dark .hljs-comment,
+      .dark .hljs-quote {
+        color: #94a3b8; /* slate-400 */
+        font-style: italic;
+      }
+      .dark .hljs-keyword,
+      .dark .hljs-selector-tag,
+      .dark .hljs-subst {
+        color: #c084fc; /* fuchsia-400, brighter purple */
+      }
+      .dark .hljs-number,
+      .dark .hljs-literal,
+      .dark .hljs-variable,
+      .dark .hljs-template-variable,
+      .dark .hljs-tag .hljs-attr {
+        color: #facc15; /* amber-400, brighter yellow/orange */
+      }
+      .dark .hljs-string,
+      .dark .hljs-doctag {
+        color: #4ade80; /* green-400, brighter green */
+      }
+      .dark .hljs-title,
+      .dark .hljs-section,
+      .dark .hljs-selector-id {
+        color: #60a5fa; /* blue-400, brighter blue for functions etc */
+      }
+      .dark .hljs-type,
+      .dark .hljs-class .hljs-title {
+        color: #f472b6; /* pink-400 */
+      }
+      .dark .hljs-tag,
+      .dark .hljs-name,
+      .dark .hljs-attribute {
+        color: #c084fc; /* fuchsia-400, same as keyword */
+      }
+      .dark .hljs-built_in,
+      .dark .hljs-builtin-name {
+        color: #22d3ee; /* cyan-400 */
       }
 
     </style>

@@ -27,7 +27,7 @@ export const ExecutionPanel: React.FC<ExecutionPanelProps> = (props) => {
                 <select 
                     value={props.mode} 
                     onChange={(e) => props.onModeChange(e.target.value as ExecutionMode)}
-                    className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 text-slate-800 dark:text-slate-200"
                 >
                     <option value="interactive">Terminal</option>
                     <option value="manual">Manual Input</option>
